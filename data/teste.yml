@@ -1,0 +1,44 @@
+V&V e Revisão:
+  "Revisão: leitura de um artefato de software":
+    Oportunidade de treinamento:
+    Diminuição de Retrabalho:
+    Descoberta de defeitos:
+
+    Tipos:
+      Revisão Informal:
+      Apresentação:
+      Revisão Técnica Formal:
+        Walkthrough:
+        Revisão por pares:
+        Inspeção:
+
+    Técnicas:
+      Ad-hoc:
+      Checklist:
+      Leitura baseada em perspectiva:
+      Stepwise abstraction:
+
+  Defeitos em Requisitos:
+    Omissão:
+    Fato Incorreto:
+    Inconsistência:
+    Ambiguidade:
+    Informação estranha:
+
+  Nomenclatura:
+    Engano:
+
+    Defeito:
+      Reachability:
+    Erro:
+      Infection:
+    Falha:
+      Propagation:
+
+  Validação:
+    O produto atende às necessidades?:
+
+  Verificação:
+    O produto atende aos requisitos?:
+
+  Erros inevitavelmente são introduzidos, mas podem ser detectados:
