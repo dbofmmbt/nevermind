@@ -15,6 +15,7 @@ overlap = "compress";
 rankdir = "LR"
 splines = "true";
 layout = "dot";
+style="rounded";
 node [
     shape = "none",
 ];
@@ -39,7 +40,7 @@ fn with_cluster(output: &mut String, f: impl FnOnce(&mut String, usize)) {
     }
 
     output.push_str(&format!(
-        "subgraph cluster_{cluster_number} {{ color=black;style=\"solid\";"
+        "subgraph cluster_{cluster_number} {{ color=black;style=\"rounded\";"
     ));
 
     f(output, cluster_number);
