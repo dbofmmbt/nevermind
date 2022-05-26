@@ -29,6 +29,7 @@ edge [
     }
 }
 
+// TODO remove this gambiarra
 static mut CLUSTER_NUMBER: usize = 0;
 
 fn with_cluster(output: &mut String, f: impl FnOnce(&mut String, usize)) {
