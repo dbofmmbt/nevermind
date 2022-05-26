@@ -1,35 +1,35 @@
-use std::{env::Args, path::PathBuf};
+use std::path::PathBuf;
 
-use anyhow::{anyhow, Context};
+use anyhow::Context;
 use nevermind::{
     map_loaders::{MapLoader, YamlMapLoader},
     map_views::DotView,
 };
 
-#[derive(Debug)]
+use clap::Parser;
+
+#[derive(Debug, Parser)]
+/// Mind Maps as code. Generate Mind Map images based on yaml files.
 struct Input {
+    /// Path to the mind map
     pub file: PathBuf,
-}
-
-impl TryFrom<Args> for Input {
-    type Error = anyhow::Error;
-
-    fn try_from(mut args: Args) -> Result<Self, Self::Error> {
-        Ok(Self {
-            file: args
-                .nth(1)
-                .ok_or_else(|| anyhow!("path is missing!"))?
-                .into(),
-        })
-    }
+    pub out: Option<PathBuf>,
 }
 
 fn main() -> anyhow::Result<()> {
-    let input = Input::try_from(std::env::args()).context("getting input from CLI")?;
-    let input = std::fs::read_to_string(input.file).context("reading file contents")?;
+    let input = Input::parse();
+    let input_file = std::fs::read_to_string(&input.file).context("reading file contents")?;
+
     let mind_map = YamlMapLoader
-        .load(input.as_str())
+        .load(input_file.as_str())
         .context("converting input to mind map")?;
-    println!("{}", DotView.to_dot(&mind_map));
+    let dot = DotView.to_dot(&mind_map);
+
+    let out_path = input
+        .out
+        .unwrap_or_else(|| input.file.with_extension("png"));
+
+    nevermind::save_as_image(out_path, &dot).context("convert dot to image")?;
+
     Ok(())
 }
