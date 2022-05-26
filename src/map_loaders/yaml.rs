@@ -1,5 +1,5 @@
 use anyhow::Context;
-use yaml_rust::{yaml, YamlLoader};
+use yaml_rust::{yaml, Yaml, YamlLoader};
 
 use crate::mind_map::MindMap;
 
@@ -29,10 +29,11 @@ fn mind_map_from_yaml(hash: yaml::Hash) -> anyhow::Result<Vec<MindMap>> {
         .map(|(key, value)| {
             let content = key.as_str().context("map content is not a string")?.into();
 
-            let children = value
-                .into_hash()
-                .map(mind_map_from_yaml)
-                .unwrap_or_else(|| Ok(vec![]))?;
+            let children = match value {
+                Yaml::String(child_content) => vec![MindMap::leaf(child_content)],
+                Yaml::Hash(hash) => mind_map_from_yaml(hash)?,
+                _ => vec![],
+            };
 
             Ok(MindMap { content, children })
         })
