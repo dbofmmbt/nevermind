@@ -1,3 +1,8 @@
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+};
+
 use crate::mind_map::MindMap;
 
 pub struct DotView;
@@ -29,28 +34,30 @@ edge [
     }
 }
 
-fn with_cluster(output: &mut String, level: usize, f: impl FnOnce(&mut String, usize)) {
+fn with_cluster(output: &mut String, label: u64, f: impl FnOnce(&mut String)) {
     output.push_str(&format!(
-        "subgraph cluster_{level} {{ color=black;style=\"rounded\";"
+        "subgraph cluster_{label} {{ color=black;style=\"rounded\";"
     ));
 
-    f(output, level);
+    f(output);
 
     output.push('}');
 }
 
-fn chain_nodes(output: &mut String, level: usize, mind_map: &MindMap) {
+fn chain_nodes(output: &mut String, label: u64, mind_map: &MindMap) {
     let content = &mind_map.content;
-
-    with_cluster(output, level, |output, _| {
+    
+    with_cluster(output, label, |output| {
         output.push_str(&format!("\"{content}\";"));
     });
-
-    with_cluster(output, level + 1, |output, number| {
+    
+    let parent_label = hash_from(&content);
+    
+    with_cluster(output, parent_label, |output| {
         if let Some(child) = mind_map.children.first() {
             let child = &child.content;
             output.push_str(&format!(
-                "\"{content}\" -> \"{child}\" [lhead=\"cluster_{number}\"];"
+                "\"{content}\" -> \"{child}\" [lhead=\"cluster_{parent_label}\"];"
             ));
         }
         for map in mind_map.children.iter() {
@@ -60,6 +67,12 @@ fn chain_nodes(output: &mut String, level: usize, mind_map: &MindMap) {
     });
 
     for map in mind_map.children.iter() {
-        chain_nodes(output, level + 1, map);
+        chain_nodes(output, parent_label, map);
     }
+}
+
+fn hash_from<T: Hash>(t: T) -> u64 {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    s.finish()
 }
